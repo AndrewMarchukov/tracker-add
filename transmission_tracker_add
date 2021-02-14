@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# PROVIDE: transmission_tracker_add
+# REQUIRE: DAEMON
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name=transmission_tracker_add
+rcvar=transmission_tracker_add_enable
+
+load_rc_config $name
+
+: ${transmission_tracker_add_enable:=YES}
+
+pidfile=/var/run/transmission/tracker-add.pid
+command="/usr/sbin/daemon"
+task="/opt/bin/add-trackers-auto.sh"
+procname="/bin/sh"
+command_args="-p ${pidfile} ${task}"
+
+run_rc_command "$1"
