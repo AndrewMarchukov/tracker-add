@@ -31,7 +31,7 @@ add_trackers () {
     rm -f "/tmp/TTAA.$id.lock"
 }
 
-trans="$(which transmission-remote) $host --auth=$auth"
+trans="/usr/local/bin/transmission-remote $host --auth=$auth"
 while true ; do
     sleep 25
 
