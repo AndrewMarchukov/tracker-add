@@ -21,13 +21,13 @@ add_trackers () {
         for tracker in $(cat $trackerslist) ; do
             echo -n "${tracker}..."
             if ${trans} --torrent "${torrent_hash}" -td "${tracker}" | grep -q 'success'; then
-                echo ' failed.'
-            else
                 echo ' done.'
+            else
+                echo ' failed.'
             fi
         done
     done
-    sleep 3m
+    sleep 180
     rm -f "/tmp/TTAA.$id.lock"
 }
 
