@@ -10,7 +10,7 @@ list_url=${TRACKER_URL:-https://raw.githubusercontent.com/ngosang/trackerslist/m
 
 add_trackers () {
     torrent_hash=$1
- for base_url in "${list_url}" ; do
+ for base_url in ${list_url}; do
     echo -e "\e[1m\e[5m"
     echo "URL for ${base_url}"
     echo -e "Adding trackers for \e[91m$torrent_name..."
