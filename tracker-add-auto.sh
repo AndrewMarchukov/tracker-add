@@ -39,7 +39,7 @@ while true ; do
     ids="$(${trans} --list | grep -vE 'Seeding|Stopped|Finished|[[:space:]]100%[[:space:]]' | grep '^ ' | awk '{ print $1 }' | grep -vE 'ID')"
     for id in $ids ; do
         add_date="$(${trans} --torrent "$id" --info| grep '^  Date added: ' |cut -c 21-)"
-        if [ $(uname) = "FreeBSD" ]; then
+        if [ "$(uname)" = "FreeBSD" ]; then
             add_date_t="$(date -jf "%+" "$add_date" "+%Y-%m-%d %H:%M")"
             dateo="$(date -jv-1M "+%Y-%m-%d %H:%M")"
         else
