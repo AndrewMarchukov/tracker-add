@@ -43,11 +43,13 @@ Nice=19
 
 #### Choose your destiny:
 
-[Docker way](https://github.com/AndrewMarchukov/tracker-add#-docker-way)
+[Docker way](#-docker-way)
 
-[Systemd way](https://github.com/AndrewMarchukov/tracker-add#-systemd-way)
+[Systemd way](#-systemd-way)
 
-[Simple way (for routers)](https://github.com/AndrewMarchukov/tracker-add#-simple-way-for-routers)
+[FreeBSD service way](#-freebsd-service-way)
+
+[Simple way (for routers)](#-simple-way-for-routers)
 
 ## Installation and usage
 
@@ -90,6 +92,29 @@ systemctl status transmission-tracker-add.service
            ├─19102 /bin/bash /opt/bin/add-trackers-auto.sh
            └─31204 sleep 5
            
+```
+
+
+#### * FreeBSD service way
+
+Edit settings.json for transmission set rpc-enabled, rpc-username and rpc-password
+
+Download scripts and make it executable:
+```bash
+install -d /opt/bin
+fetch -o /opt/bin/add-trackers-auto.sh https://raw.githubusercontent.com/AndrewMarchukov/tracker-add/master/tracker-add-auto.sh
+fetch -o /usr/local/etc/rc.d/transmission_tracker_add https://raw.githubusercontent.com/AndrewMarchukov/tracker-add/master/transmission_tracker_add
+chmod +x /opt/bin/add-trackers-auto.sh /usr/local/etc/rc.d/transmission_tracker_add
+```
+
+Set user and password in `add-trackers-auto.sh`:
+```bash
+nano /opt/bin/add-trackers-auto.sh
+```
+
+Start service:
+```bash
+service transmission_tracker_add start
 ```
 
 #### * Simple way (for routers)
