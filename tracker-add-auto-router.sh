@@ -41,7 +41,7 @@ for id in $ids ; do
     dateo="$(date -D '%s' -d "$(( `date +%s`+1*60 ))" "+%Y-%m-%d %H:%M")"
 
 if [ ! -f "/tmp/TTAA.$id.lock" ]; then
-if [[ "( "$(add_date_t)" == "$(dater)" || "$(add_date_t)" == "$(dateo)" )" ]]; then
+if [[ "$add_date_t" == "$dater" || "$add_date_t" == "$dateo" ]]; then
     hash="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info | grep '^  Hash: ' | awk '{ print $2 }')"
     torrent_name="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info | grep '^  Name: ' |cut -c 9-)"
     add_trackers "$hash" "$id" &
