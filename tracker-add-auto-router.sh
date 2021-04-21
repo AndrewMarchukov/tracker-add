@@ -41,6 +41,6 @@ while true ; do
     done
 	# delete removed torrents record from record file
     for hash in $(awk '{print $1}' $record_file); do
-        [[ $(transmission-remote "$host"  --auth="$auth" --torrent "${torrent_hash}" --info | wc -l) -eq 0 ]] && sed -in $(grep -n $hash $record_file | awk -F ':' '{print $1}')'d' $record_file
+        [[ $(transmission-remote "$host"  --auth="$auth" --torrent "${torrent_hash}" --info | wc -l) -eq 0 ]] && sed -in $(grep -n $hash $record_file | head -n 1 | awk -F ':' '{print $1}')'d' $record_file
     done
 done
