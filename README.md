@@ -20,8 +20,11 @@ A: Yes, host=host:port or host=http(s?)://host:port/transmission/
 
 <details>
   <summary>Changelog</summary>
-   
+
 ```
+Mar 10, 2020
+avoid add trackers for private torrents
+
 Mar 27, 2019
 add tracker-add-auto-router.sh script for routers
 now tracker file saved in tmp directory until update web source
@@ -59,9 +62,9 @@ Take image `docker pull andrewmhub/transmission-tracker-add`
 
 ```docker run --net=host -d -e HOSTPORT=localhost:9091 -e TR_AUTH=user:password --name=transmission-tracker-add andrewmhub/transmission-tracker-add:latest```
 
-if you need another torrent tracker list then use docker run env 
+if you need another torrent tracker list then use docker run env
 
-`-e TORRENTLIST=https://raw.githubusercontent.com/user/trackerslist/master/mylist.txt` 
+`-e TORRENTLIST=https://raw.githubusercontent.com/user/trackerslist/master/mylist.txt`
 
 you have transmission daemon in docker then read [Docker Documentation Network](https://docs.docker.com/network/)
 
@@ -91,7 +94,7 @@ systemctl status transmission-tracker-add.service
    CGroup: /system.slice/transmission-tracker-add.service
            ├─19102 /bin/bash /opt/bin/add-trackers-auto.sh
            └─31204 sleep 5
-           
+
 ```
 
 
@@ -123,7 +126,7 @@ Requirements: curl, transmission-remote
 
 Download script and make it executable:
 
-Edit settings for transmission set rpc-enabled, rpc-username and rpc-password
+Edit settings for transmission set rpc-enabled, rpc-username, rpc-password and your pt trackers
 
 ```
 wget --no-check-certificate -O tracker-add-auto-router.sh https://raw.githubusercontent.com/AndrewMarchukov/tracker-add/master/tracker-add-auto-router.sh
