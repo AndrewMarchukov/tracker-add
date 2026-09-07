@@ -1,5 +1,5 @@
 # Get more trackers, get more seeders,  get more peers transmission 
-[![Docker Image CI](https://github.com/AndrewMarchukov/tracker-add/actions/workflows/docker-image.yml/badge.svg?branch=docker)](https://github.com/AndrewMarchukov/tracker-add/actions/workflows/docker-image.yml) [![](https://images.microbadger.com/badges/version/andrewmhub/transmission-tracker-add.svg)](https://microbadger.com/images/andrewmhub/transmission-tracker-add) ![Docker Pulls](https://img.shields.io/docker/pulls/andrewmhub/transmission-tracker-add.svg) ![GitHub top language](https://img.shields.io/github/languages/top/AndrewMarchukov/tracker-add.svg) ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/andrewmhub/transmission-tracker-add/latest)
+[![Docker Image CI](https://github.com/AndrewMarchukov/tracker-add/actions/workflows/docker-image.yml/badge.svg)](https://github.com/AndrewMarchukov/tracker-add/actions/workflows/docker-image.yml) [![](https://images.microbadger.com/badges/version/andrewmhub/transmission-tracker-add.svg)](https://microbadger.com/images/andrewmhub/transmission-tracker-add) ![Docker Pulls](https://img.shields.io/docker/pulls/andrewmhub/transmission-tracker-add.svg) ![GitHub top language](https://img.shields.io/github/languages/top/AndrewMarchukov/tracker-add.svg) ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/andrewmhub/transmission-tracker-add/latest)
 
 See no peers,seeds for some torrent(s)? Add more tracker(s) for Transmission
 
@@ -59,6 +59,13 @@ Nice=19
 #### * Docker way
 
 Take image `docker pull andrewmhub/transmission-tracker-add`
+Dependabot opens a PR when Alpine releases a new version, and merging it rebuilds and pushes `:latest`.
+
+Or build it yourself — `Dockerfile` and `tracker-add-docker.sh` live in this repo:
+
+```
+docker build -t transmission-tracker-add:latest .
+```
 
 ```docker run --net=host -d -e HOSTPORT=localhost:9091 -e TR_AUTH=user:password --name=transmission-tracker-add andrewmhub/transmission-tracker-add:latest```
 
@@ -67,6 +74,9 @@ if you need another torrent tracker list then use docker run env
 `-e TORRENTLIST=https://raw.githubusercontent.com/user/trackerslist/master/mylist.txt`
 
 you have transmission daemon in docker then read [Docker Documentation Network](https://docs.docker.com/network/)
+
+The container runs `tracker-add-docker.sh`, which is configured entirely through env vars
+(`HOSTPORT`, `TR_AUTH`, `TORRENTLIST`) — the systemd and router scripts below keep their settings in the file instead.
 
 
 #### * Systemd way

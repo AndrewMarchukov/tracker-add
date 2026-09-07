@@ -1,5 +1,4 @@
-ARG ALPINE_VERSION=latest
-FROM alpine:${ALPINE_VERSION}
+FROM alpine:3.24.1
 
 ENV TORRENTLIST=https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all.txt
 
