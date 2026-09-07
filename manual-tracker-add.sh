@@ -37,7 +37,9 @@ done
 ids=${1:-"$(transmission-remote "$host" ${auth:+--auth="$auth"} --list | grep -vE '^[[:space:]]+ID[[:space:]]|Seeding|Stopped|Finished' | grep '^ ' | awk '{ gsub(/[^0-9]/,"",$1); print $1 }')"}
 
 for id in $ids ; do
-    hash="$(transmission-remote "$host" ${auth:+--auth="$auth"}  --torrent "$id" --info | grep '^  Hash: ' | awk '{ print $2 }')"
-    torrent_name="$(transmission-remote "$host" ${auth:+--auth="$auth"}  --torrent "$id" --info | grep '^  Name: ' |cut -c 9-)"
+    info="$(transmission-remote "$host" ${auth:+--auth="$auth"} --torrent "$id" --info)"
+    case "$info" in *"Public torrent: No"*) continue;; esac
+    hash="$(echo "$info" | grep '^  Hash: ' | awk '{ print $2 }')"
+    torrent_name="$(echo "$info" | grep '^  Name: ' | cut -c 9-)"
     add_trackers "$hash"
 done

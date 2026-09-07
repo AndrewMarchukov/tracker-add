@@ -28,17 +28,19 @@ done
 # Get list of active torrents
     ids="$(transmission-remote "$host" --auth="$auth" --list | grep -vE '^[[:space:]]+ID[[:space:]]|Seeding|Stopped|Finished|[[:space:]]100%[[:space:]]' | grep '^ ' | awk '{ gsub(/[^0-9]/,"",$1); print $1 }')"
 for id in $ids ; do
-    add_date="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info| grep '^  Date added: ' |cut -c 21-)"
+    info="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info)"
+    case "$info" in *"Public torrent: No"*) continue;; esac
+    hash="$(echo "$info" | grep '^  Hash: ' | awk '{ print $2 }')"
+    add_date="$(echo "$info" | grep '^  Date added: ' | cut -c 21-)"
     add_date_t="$(date -D '%a %b %d %H:%M:%S %Y' -d "$add_date" "+%Y-%m-%d %H:%M")"
     dater="$(date "+%Y-%m-%d %H:%M")"
     dateo="$(date -d "@$(( $(date +%s) - 60 ))" "+%Y-%m-%d %H:%M")"
 
-if [ ! -f "/tmp/TTAA.$id.lock" ]; then
+if [ ! -f "/tmp/TTAA.$hash.lock" ]; then
 if [ "$add_date_t" = "$dater" ] || [ "$add_date_t" = "$dateo" ]; then
-    hash="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info | grep '^  Hash: ' | awk '{ print $2 }')"
-    torrent_name="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info | grep '^  Name: ' |cut -c 9-)"
-    add_trackers "$hash" "$id" &
-    touch "/tmp/TTAA.$id.lock"
+    torrent_name="$(echo "$info" | grep '^  Name: ' | cut -c 9-)"
+    add_trackers "$hash" "$hash" &
+    touch "/tmp/TTAA.$hash.lock"
 fi
 fi
 done
