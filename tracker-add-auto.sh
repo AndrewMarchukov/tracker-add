@@ -36,7 +36,7 @@ while true; do
         rm -f "/tmp/TTAA.$id.lock"
     }
     # Get list of active torrents
-    ids="$(transmission-remote "$host" --auth="$auth" --list | grep -vE 'Seeding|Stopped|Finished|[[:space:]]100%[[:space:]]' | grep '^ ' | awk '{ print $1 }')"
+    ids="$(transmission-remote "$host" --auth="$auth" --list | grep -vE '^[[:space:]]+ID[[:space:]]|Seeding|Stopped|Finished|[[:space:]]100%[[:space:]]' | grep '^ ' | awk '{ print $1 }')"
     for id in $ids; do
         add_date="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info | grep '^  Date added: ' | cut -c 21-)"
         add_date_t="$(date -d "$add_date" "+%Y-%m-%d %H:%M")"
