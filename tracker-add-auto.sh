@@ -29,13 +29,13 @@ while true; do
         rm -f "/tmp/TTAA.$id.lock"
     }
     # Get list of active torrents
-    ids="$(transmission-remote "$host" --auth="$auth" --list | grep -vE '^[[:space:]]+ID[[:space:]]|Seeding|Stopped|Finished|[[:space:]]100%[[:space:]]' | grep '^ ' | awk '{ print $1 }')"
+    ids="$(transmission-remote "$host" --auth="$auth" --list | grep -vE '^[[:space:]]+ID[[:space:]]|Seeding|Stopped|Finished|[[:space:]]100%[[:space:]]' | grep '^ ' | awk '{ gsub(/[^0-9]/,"",$1); print $1 }')"
     for id in $ids; do
         add_date="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info | grep '^  Date added: ' | cut -c 21-)"
         add_date_t="$(date -d "$add_date" "+%Y-%m-%d %H:%M")"
         dater="$(date "+%Y-%m-%d %H:%M")"
         dateo="$(date -d "1 minutes ago" "+%Y-%m-%d %H:%M")"
-        tracker0="$(transmission-remote "$host" --auth="$auth" -t "$id" -it | sed -n '2,2p' | awk '{print $3}' | awk -F : '{print $2}' | sed -e 's/\/\///')"
+        tracker0="$(transmission-remote "$host" --auth="$auth" -t "$id" -it | sed -n '2,2p' | awk '{print $3}' | sed -e 's|.*://||' -e 's|[:/].*||')"
         if [ ${#pt_trackers[@]} -gt 0 ] && [ -n "$tracker0" ] && [[ " ${pt_trackers[*]} " == *" $tracker0 "* ]]; then
             echo "skip id=" "$id" "$tracker0"
             continue

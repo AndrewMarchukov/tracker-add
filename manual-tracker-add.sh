@@ -34,7 +34,7 @@ done
 }
 
 # Get list of active torrents
-ids=${1:-"$(transmission-remote "$host" ${auth:+--auth="$auth"} --list | grep -vE '^[[:space:]]+ID[[:space:]]|Seeding|Stopped|Finished' | grep '^ ' | awk '{ print $1 }')"}
+ids=${1:-"$(transmission-remote "$host" ${auth:+--auth="$auth"} --list | grep -vE '^[[:space:]]+ID[[:space:]]|Seeding|Stopped|Finished' | grep '^ ' | awk '{ gsub(/[^0-9]/,"",$1); print $1 }')"}
 
 for id in $ids ; do
     hash="$(transmission-remote "$host" ${auth:+--auth="$auth"}  --torrent "$id" --info | grep '^  Hash: ' | awk '{ print $2 }')"
