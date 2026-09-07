@@ -11,16 +11,9 @@ while true; do
     add_trackers() {
         torrent_hash=$1
         id=$2
-        trackerslist=/tmp/trackers.txt
         for base_url in $trackers; do
-            if [ ! -f $trackerslist ]; then
-                curl -o "$trackerslist" "${base_url}"
-            fi
-            Local=$(wc -c <$trackerslist)
-            Remote=$(curl -sI "${base_url}" | awk '/Content-Length/ {sub("\r",""); print $2}')
-            if [ "$Local" != "$Remote" ]; then
-                curl -o "$trackerslist" "${base_url}"
-            fi
+            trackerslist=/tmp/trackers.$(echo "$base_url" | cksum | cut -d' ' -f1).txt
+            curl -fsS -o "$trackerslist" -z "$trackerslist" "${base_url}"
             echo "URL for ${base_url}"
             echo "Adding trackers for $torrent_name..."
             for tracker in $(cat $trackerslist); do
@@ -43,13 +36,13 @@ while true; do
         dater="$(date "+%Y-%m-%d %H:%M")"
         dateo="$(date -d "1 minutes ago" "+%Y-%m-%d %H:%M")"
         tracker0="$(transmission-remote "$host" --auth="$auth" -t "$id" -it | sed -n '2,2p' | awk '{print $3}' | awk -F : '{print $2}' | sed -e 's/\/\///')"
-        if [[ " ${pt_trackers[@]} " =~ " $tracker0 " ]]; then
+        if [ ${#pt_trackers[@]} -gt 0 ] && [ -n "$tracker0" ] && [[ " ${pt_trackers[*]} " == *" $tracker0 "* ]]; then
             echo "skip id=" "$id" "$tracker0"
             continue
         fi
 
         if [ ! -f "/tmp/TTAA.$id.lock" ]; then
-            if [[ "( "$add_date_t" == "$dater" || "$add_date_t" == "$dateo" )" ]]; then
+            if [[ "$add_date_t" == "$dater" || "$add_date_t" == "$dateo" ]]; then
                 hash="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info | grep '^  Hash: ' | awk '{ print $2 }')"
                 torrent_name="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info | grep '^  Name: ' | cut -c 9-)"
                 add_trackers "$hash" "$id" &

@@ -5,7 +5,7 @@ ENV TORRENTLIST=https://raw.githubusercontent.com/ngosang/trackerslist/master/tr
 COPY ./tracker-add-docker.sh /opt/tracker-add-docker.sh
 
 RUN apk add --update \
-        bash transmission-cli curl coreutils && \
+        bash transmission-remote curl coreutils && \
         rm -rf /var/cache/apk/* && \
         chmod +x /opt/tracker-add-docker.sh
 

@@ -8,6 +8,7 @@ fi
 host=${TRANSMISSION_HOST:-localhost}
 list_url=${TRACKER_URL:-https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all.txt}
 
+
 add_trackers () {
     torrent_hash=$1
  for base_url in "${list_url}" ; do
@@ -16,7 +17,9 @@ add_trackers () {
     echo -e "Adding trackers for \e[91m$torrent_name..."
     echo -en "\e[0m"
     echo -e "\e[2m\e[92m"
-for tracker in $(curl --location -# "${base_url}") ; do
+    trackerslist=${TMPDIR:-/tmp}/trackers.$(echo "$base_url" | cksum | cut -d' ' -f1).txt
+    curl -fsSL -o "$trackerslist" -z "$trackerslist" "${base_url}"
+for tracker in $(cat "$trackerslist") ; do
     echo -en "\e[0m"
     echo -ne "\e[93m*\e[0m ${tracker}..."
 if transmission-remote "$host" ${auth:+--auth="$auth"} --torrent "${torrent_hash}" -td "${tracker}" | grep -q 'success'; then
@@ -31,7 +34,7 @@ done
 }
 
 # Get list of active torrents
-ids=${1:-"$(transmission-remote "$host" ${auth:+--auth="$auth"} --list | grep -vE 'Seeding|Stopped|Finished' | grep '^ ' | awk '{ print $1 }')"}
+ids=${1:-"$(transmission-remote "$host" ${auth:+--auth="$auth"} --list | grep -vE '^[[:space:]]+ID[[:space:]]|Seeding|Stopped|Finished' | grep '^ ' | awk '{ print $1 }')"}
 
 for id in $ids ; do
     hash="$(transmission-remote "$host" ${auth:+--auth="$auth"}  --torrent "$id" --info | grep '^  Hash: ' | awk '{ print $2 }')"

@@ -5,18 +5,12 @@ sleep 25
 add_trackers () {
     torrent_hash=$1
     id=$2
-for base_url in "$TORRENTLIST" ; do
-if [ ! -f /tmp/trackers.txt ]; then
-curl -o "/tmp/trackers.txt" "${base_url}"
-fi
-Local=$(wc -c < /tmp/trackers.txt)
-Remote=$(curl -sI "${base_url}" | awk '/Content-Length/ {sub("\r",""); print $2}')
-if [ $Local != $Remote ]; then
-curl -o "/tmp/trackers.txt" "${base_url}"
-fi
+for base_url in $TORRENTLIST ; do
+trackerslist=/tmp/trackers.$(echo "$base_url" | cksum | cut -d' ' -f1).txt
+curl -fsS -o "$trackerslist" -z "$trackerslist" "${base_url}"
     echo "URL for ${base_url}"
     echo "Adding trackers for $torrent_name..."
-for tracker in $(cat /tmp/trackers.txt) ; do
+for tracker in $(cat "$trackerslist") ; do
     echo -n "${tracker}..."
 if transmission-remote "$HOSTPORT"  --authenv --torrent "${torrent_hash}" -td "${tracker}" | grep -q 'success'; then
     echo ' done.'

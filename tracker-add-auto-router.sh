@@ -8,16 +8,9 @@ sleep 25
 add_trackers () {
     torrent_hash=$1
     id=$2
-    trackerslist=/tmp/trackers.txt
 for base_url in https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all.txt ; do
-if [ ! -f $trackerslist ]; then
-curl -o "$trackerslist" "${base_url}"
-fi
-Local=$(wc -c < $trackerslist)
-Remote=$(curl -sI "${base_url}" | awk '/Content-Length/ {sub("\r",""); print $2}')
-if [ "$Local" != "$Remote" ]; then
-curl -o "$trackerslist" "${base_url}"
-fi
+trackerslist=/tmp/trackers.$(echo "$base_url" | cksum | cut -d' ' -f1).txt
+curl -fsS -o "$trackerslist" -z "$trackerslist" "${base_url}"
     echo "URL for ${base_url}"
     echo "Adding trackers for $torrent_name..."
 for tracker in $(cat $trackerslist) ; do
@@ -36,12 +29,12 @@ done
     ids="$(transmission-remote "$host" --auth="$auth" --list | grep -vE '^[[:space:]]+ID[[:space:]]|Seeding|Stopped|Finished|[[:space:]]100%[[:space:]]' | grep '^ ' | awk '{ print $1 }')"
 for id in $ids ; do
     add_date="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info| grep '^  Date added: ' |cut -c 21-)"
-    add_date_t="$(date -d "$add_date" "+%Y-%m-%d %H:%M")"
+    add_date_t="$(date -D '%a %b %d %H:%M:%S %Y' -d "$add_date" "+%Y-%m-%d %H:%M")"
     dater="$(date "+%Y-%m-%d %H:%M")"
-    dateo="$(date -D '%s' -d "$(( `date +%s`+1*60 ))" "+%Y-%m-%d %H:%M")"
+    dateo="$(date -d "@$(( $(date +%s) - 60 ))" "+%Y-%m-%d %H:%M")"
 
 if [ ! -f "/tmp/TTAA.$id.lock" ]; then
-if [[ "( "$(add_date_t)" == "$(dater)" || "$(add_date_t)" == "$(dateo)" )" ]]; then
+if [ "$add_date_t" = "$dater" ] || [ "$add_date_t" = "$dateo" ]; then
     hash="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info | grep '^  Hash: ' | awk '{ print $2 }')"
     torrent_name="$(transmission-remote "$host" --auth="$auth" --torrent "$id" --info | grep '^  Name: ' |cut -c 9-)"
     add_trackers "$hash" "$id" &
