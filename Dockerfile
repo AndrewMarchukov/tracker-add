@@ -1,4 +1,4 @@
-FROM alpine:3.24.1
+FROM alpine:3.24.2
 
 ENV TORRENTLIST=https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_all.txt
 
